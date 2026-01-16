@@ -36,9 +36,21 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Generate Release Keystore
+    - name: Setup Release Keystore
       run: |
-        keytool -genkey -v -keystore release.keystore -alias triprepkey -keyalg RSA -keysize 2048 -validity 10000 -storepass triprep2024 -keypass triprep2024 -dname "CN=TriPrep, OU=Development, O=TriPrep, L=Paris, ST=IDF, C=FR"
+        if [ ! -f "release.keystore" ]; then
+          echo "Generating new release keystore..."
+          keytool -genkey -v -keystore release.keystore -alias triprepkey -keyalg RSA -keysize 2048 -validity 10000 -storepass triprep2024 -keypass triprep2024 -dname "CN=TriPrep, OU=Development, O=TriPrep, L=Paris, ST=IDF, C=FR"
+
+          # Commit keystore to repository for future builds
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add release.keystore
+          git commit -m "Add persistent release keystore for consistent app signing"
+          git push origin HEAD:${GITHUB_REF#refs/heads/}
+        else
+          echo "Using existing release keystore"
+        fi
         ls -la release.keystore
 
     - name: Build with Gradle
@@ -60,6 +72,9 @@ jobs:
       run: |
         git config --global user.name 'GitHub Actions'
         git config --global user.email 'actions@github.com'
+
+        # Pull latest changes (in case keystore was just committed)
+        git pull origin ${GITHUB_REF#refs/heads/} --rebase
 
         # Copy APK to releases folder on current branch
         mkdir -p releases
