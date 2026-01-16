@@ -36,14 +36,24 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    - name: Generate Release Keystore
+      run: |
+        keytool -genkey -v -keystore release.keystore -alias triprepkey -keyalg RSA -keysize 2048 -validity 10000 -storepass triprep2024 -keypass triprep2024 -dname "CN=TriPrep, OU=Development, O=TriPrep, L=Paris, ST=IDF, C=FR"
+        ls -la release.keystore
+
     - name: Build with Gradle
+      env:
+        KEYSTORE_FILE: release.keystore
+        KEYSTORE_PASSWORD: triprep2024
+        KEY_ALIAS: triprepkey
+        KEY_PASSWORD: triprep2024
       run: ./gradlew assembleRelease
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-release
-        path: app/build/outputs/apk/release/app-release-unsigned.apk
+        path: app/build/outputs/apk/release/app-release.apk
 
     - name: Upload APK to releases folder
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/claude/')
@@ -53,7 +63,7 @@ jobs:
 
         # Copy APK to releases folder on current branch
         mkdir -p releases
-        cp app/build/outputs/apk/release/app-release-unsigned.apk releases/TriPrepApp-latest.apk
+        cp app/build/outputs/apk/release/app-release.apk releases/TriPrepApp-latest.apk
 
         # Commit and push to current branch
         git add releases/
@@ -70,7 +80,7 @@ jobs:
       with:
         tag_name: v1.0.${{ github.run_number }}
         name: Release v1.0.${{ github.run_number }}
-        files: app/build/outputs/apk/release/app-release-unsigned.apk
+        files: app/build/outputs/apk/release/app-release.apk
         draft: false
         prerelease: false
       env:
