@@ -8,6 +8,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import com.triathlon.triprepapp.R
+import com.triathlon.triprepapp.data.PerformanceDataManager
 
 class RunningCalculatorActivity : AppCompatActivity() {
     private lateinit var distanceInput: TextInputEditText
@@ -54,6 +55,9 @@ class RunningCalculatorActivity : AppCompatActivity() {
 
         vmaResultText.text = getString(R.string.vma_result, vma)
         vo2maxResultText.text = getString(R.string.vo2max_result, vo2max)
+
+        // Save to SharedPreferences
+        PerformanceDataManager.saveVMA(this, vma, vo2max)
 
         resultsCard.visibility = View.VISIBLE
     }

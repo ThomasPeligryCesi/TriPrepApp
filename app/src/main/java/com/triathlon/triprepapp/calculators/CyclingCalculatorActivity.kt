@@ -8,6 +8,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import com.triathlon.triprepapp.R
+import com.triathlon.triprepapp.data.PerformanceDataManager
 
 class CyclingCalculatorActivity : AppCompatActivity() {
     private lateinit var ftpInput: TextInputEditText
@@ -61,6 +62,10 @@ class CyclingCalculatorActivity : AppCompatActivity() {
         """.trimIndent()
 
         zonesResultText.text = zonesText
+
+        // Save to SharedPreferences
+        PerformanceDataManager.saveFTP(this, ftp)
+
         resultsCard.visibility = View.VISIBLE
     }
 

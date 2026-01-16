@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Original Material Colors -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,4 +8,28 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Modern Glassmorphism Theme -->
+    <color name="cloud_white">#F5F7FA</color>
+    <color name="glass_white">#E8FFFFFF</color>
+    <color name="glass_overlay">#1A000000</color>
+
+    <!-- Primary Colors - Light & Airy -->
+    <color name="sky_blue">#4FC3F7</color>
+    <color name="sky_blue_light">#81D4FA</color>
+    <color name="ocean_blue">#29B6F6</color>
+
+    <!-- Accent Colors -->
+    <color name="coral">#FF6B9D</color>
+    <color name="mint">#4ECDC4</color>
+    <color name="lavender">#B39DDB</color>
+
+    <!-- Neutral -->
+    <color name="cloud_gray">#CFD8DC</color>
+    <color name="text_primary">#263238</color>
+    <color name="text_secondary">#546E7A</color>
+
+    <!-- Glass Card Backgrounds -->
+    <color name="glass_card">#DEFFFFFF</color>
+    <color name="glass_card_pressed">#C8FFFFFF</color>
 </resources>

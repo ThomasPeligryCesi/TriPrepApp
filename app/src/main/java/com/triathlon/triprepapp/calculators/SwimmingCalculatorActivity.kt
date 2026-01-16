@@ -8,6 +8,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import com.triathlon.triprepapp.R
+import com.triathlon.triprepapp.data.PerformanceDataManager
 
 class SwimmingCalculatorActivity : AppCompatActivity() {
     private lateinit var timeInput: TextInputEditText
@@ -69,6 +70,9 @@ class SwimmingCalculatorActivity : AppCompatActivity() {
         v2ResultText.text = formatZoneResult("V2", v2_50m, v2_100m, v2_200m)
         v3ResultText.text = formatZoneResult("V3", v3_50m, v3_100m, v3_200m)
         v4ResultText.text = formatZoneResult("V4", v4_50m, v4_100m, v4_200m)
+
+        // Save to SharedPreferences
+        PerformanceDataManager.saveSwim400m(this, timeText)
 
         resultsCard.visibility = View.VISIBLE
     }
