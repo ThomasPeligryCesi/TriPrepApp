@@ -63,9 +63,10 @@ captures/
 .idea/codeStyles/
 .idea/
 
-# Keystore files
+# Keystore files (except release.keystore for consistent app signing)
 *.jks
 *.keystore
+!release.keystore
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
