@@ -97,8 +97,8 @@
                 android:text="🏃 Course"
                 android:checkable="true"
                 android:checked="true"
-                android:textColor="@color/text_primary"
-                app:chipBackgroundColor="@color/white"
+                android:textColor="@color/chip_text_color"
+                app:chipBackgroundColor="@color/chip_background_color"
                 app:chipStrokeColor="@color/ocean_blue"
                 app:chipStrokeWidth="2dp"
                 style="@style/Widget.MaterialComponents.Chip.Choice"/>
@@ -109,8 +109,8 @@
                 android:layout_height="wrap_content"
                 android:text="🚴 Vélo"
                 android:checkable="true"
-                android:textColor="@color/text_primary"
-                app:chipBackgroundColor="@color/white"
+                android:textColor="@color/chip_text_color"
+                app:chipBackgroundColor="@color/chip_background_color"
                 app:chipStrokeColor="@color/ocean_blue"
                 app:chipStrokeWidth="2dp"
                 style="@style/Widget.MaterialComponents.Chip.Choice"/>
@@ -121,8 +121,8 @@
                 android:layout_height="wrap_content"
                 android:text="🏊 Natation"
                 android:checkable="true"
-                android:textColor="@color/text_primary"
-                app:chipBackgroundColor="@color/white"
+                android:textColor="@color/chip_text_color"
+                app:chipBackgroundColor="@color/chip_background_color"
                 app:chipStrokeColor="@color/ocean_blue"
                 app:chipStrokeWidth="2dp"
                 style="@style/Widget.MaterialComponents.Chip.Choice"/>
