@@ -147,7 +147,8 @@ class TrainingPlannerActivity : AppCompatActivity() {
         }
 
         // Setup parts adapter
-        val partsAdapter = TrainingPartAdapter(mutableListOf()) { position ->
+        lateinit var partsAdapter: TrainingPartAdapter
+        partsAdapter = TrainingPartAdapter(mutableListOf()) { position ->
             partsAdapter.removePart(position)
         }
         partsRecyclerView.adapter = partsAdapter
