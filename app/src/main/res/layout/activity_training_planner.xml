@@ -57,7 +57,10 @@
                 <CalendarView
                     android:id="@+id/calendarView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:dateTextAppearance="@style/CalendarDateTextStyle"
+                    android:weekDayTextAppearance="@style/CalendarWeekDayTextStyle"
+                    android:background="@color/white"/>
             </LinearLayout>
 
             <!-- Trainings Section -->
