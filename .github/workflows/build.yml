@@ -45,36 +45,23 @@ jobs:
         name: app-release
         path: app/build/outputs/apk/release/app-release-unsigned.apk
 
-    - name: Create Release Branch
-      if: github.event_name == 'push'
+    - name: Upload APK to releases folder
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/claude/')
       run: |
         git config --global user.name 'GitHub Actions'
         git config --global user.email 'actions@github.com'
 
-        # Fetch all branches
-        git fetch origin
-
-        # Check if release branch exists on remote
-        if git ls-remote --heads origin release | grep release; then
-          echo "Release branch exists, checking it out"
-          git checkout release
-          git pull origin release
-        else
-          echo "Release branch does not exist, creating it"
-          git checkout -b release
-        fi
-
-        # Copy APK to release branch
+        # Copy APK to releases folder on current branch
         mkdir -p releases
         cp app/build/outputs/apk/release/app-release-unsigned.apk releases/TriPrepApp-latest.apk
 
-        # Commit and push
+        # Commit and push to current branch
         git add releases/
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else
           git commit -m "Update release APK - $(date +'%Y-%m-%d %H:%M:%S')"
-          git push origin release
+          git push origin HEAD:${GITHUB_REF#refs/heads/}
         fi
 
     - name: Create GitHub Release
