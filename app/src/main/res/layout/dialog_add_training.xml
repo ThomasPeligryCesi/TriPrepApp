@@ -165,15 +165,16 @@
                 android:textColorHint="@color/text_secondary"
                 app:boxStrokeColor="@color/ocean_blue"
                 app:hintTextColor="@color/ocean_blue"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <AutoCompleteTextView
                     android:id="@+id/partTypeInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:hint="Ex: V4"
-                    android:textColor="@color/text_primary"/>
+                    android:inputType="none"
+                    android:hint="Sélectionner"
+                    android:textColor="@color/text_primary"
+                    android:focusable="false"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout

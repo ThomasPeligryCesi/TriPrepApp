@@ -12,6 +12,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.CalendarView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -116,7 +118,7 @@ class TrainingPlannerActivity : AppCompatActivity() {
         val timeInput = dialogView.findViewById<TextInputEditText>(R.id.timeInput)
         val sportChipGroup = dialogView.findViewById<ChipGroup>(R.id.sportChipGroup)
         val partsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.partsRecyclerView)
-        val partTypeInput = dialogView.findViewById<TextInputEditText>(R.id.partTypeInput)
+        val partTypeInput = dialogView.findViewById<AutoCompleteTextView>(R.id.partTypeInput)
         val partDurationInput = dialogView.findViewById<TextInputEditText>(R.id.partDurationInput)
         val btnAddPart = dialogView.findViewById<MaterialButton>(R.id.btnAddPart)
 
@@ -162,6 +164,29 @@ class TrainingPlannerActivity : AppCompatActivity() {
         partsRecyclerView.adapter = partsAdapter
         partsRecyclerView.layoutManager = LinearLayoutManager(this)
 
+        // Setup type dropdown based on selected sport
+        fun updatePartTypes(sport: Sport) {
+            val types = sport.getPartTypes()
+            val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, types)
+            partTypeInput.setAdapter(adapter)
+        }
+
+        // Initialize with default sport (RUNNING)
+        updatePartTypes(Sport.RUNNING)
+
+        // Update part types when sport changes
+        sportChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
+            if (checkedIds.isNotEmpty()) {
+                val sport = when (checkedIds.first()) {
+                    R.id.chipCycling -> Sport.CYCLING
+                    R.id.chipSwimming -> Sport.SWIMMING
+                    else -> Sport.RUNNING
+                }
+                updatePartTypes(sport)
+                partTypeInput.text?.clear()
+            }
+        }
+
         // Add part button
         btnAddPart.setOnClickListener {
             val type = partTypeInput.text.toString()
@@ -169,7 +194,7 @@ class TrainingPlannerActivity : AppCompatActivity() {
 
             if (type.isNotEmpty() && duration.isNotEmpty()) {
                 partsAdapter.addPart(TrainingPart(type, duration))
-                partTypeInput.text?.clear()
+                partTypeInput.setText("")
                 partDurationInput.text?.clear()
             }
         }

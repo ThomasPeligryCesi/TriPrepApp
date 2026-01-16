@@ -27,6 +27,45 @@ enum class Sport {
             SWIMMING -> "🏊"
         }
     }
+
+    fun getPartTypes(): List<String> {
+        return when(this) {
+            SWIMMING -> listOf(
+                "Panaché",
+                "Diff. de cr",
+                "Climax",
+                "Cr",
+                "Pull",
+                "Plaquettes",
+                "R",
+                "Prog.",
+                "Sprint",
+                "Respi 3,5,7...temps",
+                "Jbes avec planche",
+                "P + P",
+                "Sans matos"
+            )
+            CYCLING -> listOf(
+                "Vélocité",
+                "End. de force",
+                "Parcours plat",
+                "Parcours semi-vallonné",
+                "Parcours vallonné",
+                "Ench. à pied"
+            )
+            RUNNING -> listOf(
+                "Échauffement",
+                "Retour au calme",
+                "R",
+                "Intensité maximale",
+                "En trottinant",
+                "Endurance",
+                "Tempo",
+                "Fractionné",
+                "Seuil"
+            )
+        }
+    }
 }
 
 data class Training(
