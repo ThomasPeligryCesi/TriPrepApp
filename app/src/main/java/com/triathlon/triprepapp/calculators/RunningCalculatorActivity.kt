@@ -50,8 +50,8 @@ class RunningCalculatorActivity : AppCompatActivity() {
         // VMA = (distance en mètres / 100) km/h
         val vma = distance / 100.0
 
-        // VO2 Max = distance / 10
-        val vo2max = distance / 10.0
+        // VO2 Max = 3.5 * VMA
+        val vo2max = vma * 3.5
 
         vmaResultText.text = getString(R.string.vma_result, vma)
         vo2maxResultText.text = getString(R.string.vo2max_result, vo2max)
