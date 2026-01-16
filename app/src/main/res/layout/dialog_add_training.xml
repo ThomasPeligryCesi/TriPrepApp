@@ -9,23 +9,48 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="20dp">
 
+        <!-- Header -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nouvel entraînement"
-            android:textSize="24sp"
+            android:text="✨ Nouvel entraînement"
+            android:textSize="26sp"
             android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="20dp"/>
+            android:textColor="@color/ocean_blue"
+            android:layout_marginBottom="24dp"/>
 
-        <!-- Date and Time -->
-        <LinearLayout
+        <!-- Section 1: Date et Heure -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/cloud_gray"
+            app:cardBackgroundColor="@color/cloud_white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📅 Quand ?"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/dateInputLayout"
@@ -70,25 +95,42 @@
                     android:inputType="none"
                     android:textColor="@color/text_primary"/>
             </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <!-- Sport Selection -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sport"
-            android:textSize="14sp"
-            android:textColor="@color/text_secondary"
-            android:textAllCaps="true"
-            android:layout_marginBottom="8dp"/>
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/sportChipGroup"
+        <!-- Section 2: Sport -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:singleSelection="true"
-            app:chipSpacingHorizontal="8dp">
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/cloud_gray"
+            app:cardBackgroundColor="@color/cloud_white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🏃 Quel sport ?"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="12dp"/>
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/sportChipGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:singleSelection="true"
+                    app:chipSpacingHorizontal="8dp">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipRunning"
@@ -126,111 +168,158 @@
                 app:chipStrokeColor="@color/ocean_blue"
                 app:chipStrokeWidth="2dp"
                 style="@style/Widget.MaterialComponents.Chip.Choice"/>
-        </com.google.android.material.chip.ChipGroup>
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <!-- Training Parts Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Parties de l'entraînement"
-            android:textSize="14sp"
-            android:textColor="@color/text_secondary"
-            android:textAllCaps="true"
-            android:layout_marginBottom="8dp"/>
-
-        <!-- Parts List -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/partsRecyclerView"
+        <!-- Section 3: Parties de l'entraînement -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:nestedScrollingEnabled="false"/>
-
-        <!-- Add Part Form -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@color/cloud_white"
-            android:padding="12dp"
             android:layout_marginBottom="20dp"
-            android:elevation="2dp">
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/cloud_gray"
+            app:cardBackgroundColor="@color/cloud_white">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Type"
-                android:layout_marginEnd="8dp"
-                android:textColorHint="@color/text_secondary"
-                app:boxStrokeColor="@color/ocean_blue"
-                app:hintTextColor="@color/ocean_blue"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <AutoCompleteTextView
-                    android:id="@+id/partTypeInput"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:hint="Sélectionner"
+                    android:text="📋 Parties de l'entraînement"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
                     android:textColor="@color/text_primary"
-                    android:focusable="false"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginBottom="12dp"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Durée"
-                android:layout_marginEnd="8dp"
-                android:textColorHint="@color/text_secondary"
-                app:boxStrokeColor="@color/ocean_blue"
-                app:hintTextColor="@color/ocean_blue"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/partDurationInput"
+                <!-- Parts List -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/partsRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:hint="Ex: 1h00"
-                    android:textColor="@color/text_primary"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginBottom="16dp"
+                    android:nestedScrollingEnabled="false"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAddPart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="+"
-                android:textSize="20sp"
-                android:textColor="@color/ocean_blue"
-                app:cornerRadius="12dp"
-                style="@style/Widget.MaterialComponents.Button.TextButton"/>
-        </LinearLayout>
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/cloud_gray"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="➕ Ajouter une partie"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/ocean_blue"
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- Add Part Form -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Type d'entraînement"
+                        android:layout_marginBottom="12dp"
+                        android:textColorHint="@color/text_secondary"
+                        app:boxStrokeColor="@color/ocean_blue"
+                        app:hintTextColor="@color/ocean_blue"
+                        app:startIconDrawable="@android:drawable/ic_menu_sort_by_size"
+                        app:startIconTint="@color/ocean_blue"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/partTypeInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:hint="Sélectionner le type"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp"
+                            android:focusable="false"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Durée"
+                        android:layout_marginBottom="16dp"
+                        android:textColorHint="@color/text_secondary"
+                        app:boxStrokeColor="@color/ocean_blue"
+                        app:hintTextColor="@color/ocean_blue"
+                        app:startIconDrawable="@android:drawable/ic_menu_recent_history"
+                        app:startIconTint="@color/ocean_blue"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/partDurationInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text"
+                            android:hint="Ex: 1h00, 45min, 30'"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAddPart"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="➕ Ajouter cette partie"
+                        android:textSize="16sp"
+                        android:textColor="@color/white"
+                        app:cornerRadius="12dp"
+                        app:backgroundTint="@color/ocean_blue"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Action Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="end">
+            android:layout_marginTop="8dp"
+            android:gravity="center">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
                 android:text="Annuler"
+                android:textSize="16sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginEnd="8dp"
-                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/cloud_gray"
+                app:strokeWidth="1dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSave"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Enregistrer"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="✓ Enregistrer"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 android:textColor="@color/white"
-                android:background="@drawable/bg_button_rounded"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="12dp"
                 app:backgroundTint="@color/ocean_blue"/>
         </LinearLayout>
 
