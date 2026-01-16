@@ -19,7 +19,7 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file(System.getenv("KEYSTORE_FILE") ?: "release.keystore")
+            storeFile = rootProject.file(System.getenv("KEYSTORE_FILE") ?: "release.keystore")
             storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "triprep2024"
             keyAlias = System.getenv("KEY_ALIAS") ?: "triprepkey"
             keyPassword = System.getenv("KEY_PASSWORD") ?: "triprep2024"
