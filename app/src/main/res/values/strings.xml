@@ -18,9 +18,9 @@
     <string name="swimming_title">Test 400m Natation</string>
     <string name="swimming_time">Temps pour 400m (MM:SS)</string>
     <string name="swimming_results">Allures d\'entraînement</string>
-    <string name="v2_zone">V2 (50m) : %.1fs | (100m) : %.1fs | (200m) : %.1fs</string>
-    <string name="v3_zone">V3 (50m) : %.1fs | (100m) : %.1fs | (200m) : %.1fs</string>
-    <string name="v4_zone">V4 (50m) : %.1fs | (100m) : %.1fs | (200m) : %.1fs</string>
+    <string name="v2_zone" formatted="false">V2 (50m) : %.1fs | (100m) : %.1fs | (200m) : %.1fs</string>
+    <string name="v3_zone" formatted="false">V3 (50m) : %.1fs | (100m) : %.1fs | (200m) : %.1fs</string>
+    <string name="v4_zone" formatted="false">V4 (50m) : %.1fs | (100m) : %.1fs | (200m) : %.1fs</string>
 
     <!-- Cycling Calculator -->
     <string name="cycling_title">Calculateur Vélo</string>
