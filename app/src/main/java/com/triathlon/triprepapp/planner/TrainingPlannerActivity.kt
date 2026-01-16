@@ -84,7 +84,9 @@ class TrainingPlannerActivity : AppCompatActivity() {
         trainings.clear()
         trainings.addAll(TrainingStorageManager.loadTrainings(this))
 
-        trainingAdapter = TrainingAdapter(mutableListOf())
+        trainingAdapter = TrainingAdapter(mutableListOf()) { training ->
+            showEditTrainingDialog(training)
+        }
         trainingsRecyclerView.adapter = trainingAdapter
         trainingsRecyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -112,8 +114,17 @@ class TrainingPlannerActivity : AppCompatActivity() {
         trainingAdapter.updateTrainings(filtered)
     }
 
+    private fun showEditTrainingDialog(existingTraining: Training) {
+        showTrainingDialog(existingTraining)
+    }
+
     private fun showAddTrainingDialog() {
+        showTrainingDialog(null)
+    }
+
+    private fun showTrainingDialog(existingTraining: Training? = null) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_training, null)
+        val dialogTitle = dialogView.findViewById<TextView>(R.id.dialogTitle)
         val dateInput = dialogView.findViewById<TextInputEditText>(R.id.dateInput)
         val timeInput = dialogView.findViewById<TextInputEditText>(R.id.timeInput)
         val sportChipGroup = dialogView.findViewById<ChipGroup>(R.id.sportChipGroup)
@@ -122,9 +133,19 @@ class TrainingPlannerActivity : AppCompatActivity() {
         val partDurationInput = dialogView.findViewById<TextInputEditText>(R.id.partDurationInput)
         val btnAddPart = dialogView.findViewById<MaterialButton>(R.id.btnAddPart)
 
-        // Initialize date and time with selected date
-        dateInput.setText(selectedDate)
-        timeInput.setText("08:00")
+        // Set dialog title based on mode
+        if (existingTraining != null) {
+            dialogTitle.text = "✏️ Modifier l'entraînement"
+        }
+
+        // Initialize date and time
+        if (existingTraining != null) {
+            dateInput.setText(existingTraining.date)
+            timeInput.setText(existingTraining.time)
+        } else {
+            dateInput.setText(selectedDate)
+            timeInput.setText("08:00")
+        }
 
         // Setup date picker
         dateInput.setOnClickListener {
@@ -156,9 +177,10 @@ class TrainingPlannerActivity : AppCompatActivity() {
             ).show()
         }
 
-        // Setup parts adapter
+        // Setup parts adapter with existing parts if editing
+        val initialParts = existingTraining?.parts?.toMutableList() ?: mutableListOf()
         lateinit var partsAdapter: TrainingPartAdapter
-        partsAdapter = TrainingPartAdapter(mutableListOf()) { position ->
+        partsAdapter = TrainingPartAdapter(initialParts) { position ->
             partsAdapter.removePart(position)
         }
         partsRecyclerView.adapter = partsAdapter
@@ -171,8 +193,16 @@ class TrainingPlannerActivity : AppCompatActivity() {
             partTypeInput.setAdapter(adapter)
         }
 
-        // Initialize with default sport (RUNNING)
-        updatePartTypes(Sport.RUNNING)
+        // Initialize sport selection and part types
+        val initialSport = existingTraining?.sport ?: Sport.RUNNING
+        updatePartTypes(initialSport)
+
+        // Select the correct sport chip
+        when (initialSport) {
+            Sport.CYCLING -> sportChipGroup.check(R.id.chipCycling)
+            Sport.SWIMMING -> sportChipGroup.check(R.id.chipSwimming)
+            Sport.RUNNING -> sportChipGroup.check(R.id.chipRunning)
+        }
 
         // Update part types when sport changes
         sportChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
@@ -219,19 +249,34 @@ class TrainingPlannerActivity : AppCompatActivity() {
             }
 
             if (date.isNotEmpty() && time.isNotEmpty() && parts.isNotEmpty()) {
-                val training = Training(
-                    date = date,
-                    time = time,
-                    sport = sport,
-                    parts = parts
-                )
-                trainings.add(training)
+                if (existingTraining != null) {
+                    // Edit mode: remove old training and add updated one
+                    trainings.removeIf { it.id == existingTraining.id }
+                    val updatedTraining = Training(
+                        id = existingTraining.id, // Keep same ID
+                        date = date,
+                        time = time,
+                        sport = sport,
+                        parts = parts
+                    )
+                    trainings.add(updatedTraining)
+                    scheduleNotification(updatedTraining)
+                } else {
+                    // Add mode: create new training
+                    val training = Training(
+                        date = date,
+                        time = time,
+                        sport = sport,
+                        parts = parts
+                    )
+                    trainings.add(training)
+                    scheduleNotification(training)
+                }
 
                 // Save trainings to persistent storage
                 TrainingStorageManager.saveTrainings(this, trainings)
 
                 filterTrainingsByDate()
-                scheduleNotification(training)
                 dialog.dismiss()
             }
         }

@@ -7,8 +7,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.triathlon.triprepapp.R
 
-class TrainingAdapter(private val trainings: MutableList<Training>) :
-    RecyclerView.Adapter<TrainingAdapter.TrainingViewHolder>() {
+class TrainingAdapter(
+    private val trainings: MutableList<Training>,
+    private val onTrainingClick: (Training) -> Unit = {}
+) : RecyclerView.Adapter<TrainingAdapter.TrainingViewHolder>() {
 
     class TrainingViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val sportIcon: TextView = view.findViewById(R.id.trainingSportIcon)
@@ -29,6 +31,10 @@ class TrainingAdapter(private val trainings: MutableList<Training>) :
         holder.sportName.text = training.sport.displayName()
         holder.timeText.text = training.time
         holder.partsText.text = training.getDisplayParts()
+
+        holder.itemView.setOnClickListener {
+            onTrainingClick(training)
+        }
     }
 
     override fun getItemCount() = trainings.size
