@@ -1,38 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_glass_card"
+    android:padding="16dp"
     android:layout_margin="8dp"
-    app:cardElevation="2dp">
+    android:elevation="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
 
         <TextView
-            android:id="@+id/trainingType"
+            android:id="@+id/trainingSportIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:text="Course"/>
+            android:text="🏃"
+            android:textSize="24sp"
+            android:layout_marginEnd="12dp"/>
 
-        <TextView
-            android:id="@+id/trainingTime"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="08:00"/>
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/trainingDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Séance VMA"/>
+            <TextView
+                android:id="@+id/trainingSportName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Course"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"/>
+
+            <TextView
+                android:id="@+id/trainingTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="08:00"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+    <!-- Training Parts -->
+    <TextView
+        android:id="@+id/trainingParts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="V4 1h00\nEndurance 30min"
+        android:textSize="14sp"
+        android:textColor="@color/text_primary"
+        android:lineSpacingExtra="4dp"/>
+
+</LinearLayout>
