@@ -28,6 +28,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Hide action bar
+        supportActionBar?.hide()
+
         vmaValue = findViewById(R.id.vmaValue)
         vo2maxValue = findViewById(R.id.vo2maxValue)
         ftpValue = findViewById(R.id.ftpValue)
