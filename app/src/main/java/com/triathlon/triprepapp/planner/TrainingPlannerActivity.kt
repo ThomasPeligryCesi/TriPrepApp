@@ -24,6 +24,7 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.triathlon.triprepapp.R
+import com.triathlon.triprepapp.data.TrainingStorageManager
 import com.triathlon.triprepapp.notifications.TrainingNotificationReceiver
 import java.text.SimpleDateFormat
 import java.util.*
@@ -44,7 +45,7 @@ class TrainingPlannerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_training_planner)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
 
         // Request notification permission for Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -77,9 +78,16 @@ class TrainingPlannerActivity : AppCompatActivity() {
             filterTrainingsByDate()
         }
 
+        // Load trainings from persistent storage
+        trainings.clear()
+        trainings.addAll(TrainingStorageManager.loadTrainings(this))
+
         trainingAdapter = TrainingAdapter(mutableListOf())
         trainingsRecyclerView.adapter = trainingAdapter
         trainingsRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Show trainings for selected date
+        filterTrainingsByDate()
 
         findViewById<FloatingActionButton>(R.id.fabAddTraining).setOnClickListener {
             showAddTrainingDialog()
@@ -193,6 +201,10 @@ class TrainingPlannerActivity : AppCompatActivity() {
                     parts = parts
                 )
                 trainings.add(training)
+
+                // Save trainings to persistent storage
+                TrainingStorageManager.saveTrainings(this, trainings)
+
                 filterTrainingsByDate()
                 scheduleNotification(training)
                 dialog.dismiss()

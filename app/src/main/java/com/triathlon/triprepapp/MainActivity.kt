@@ -10,6 +10,7 @@ import com.triathlon.triprepapp.calculators.CyclingCalculatorActivity
 import com.triathlon.triprepapp.calculators.RunningCalculatorActivity
 import com.triathlon.triprepapp.calculators.SwimmingCalculatorActivity
 import com.triathlon.triprepapp.data.PerformanceDataManager
+import com.triathlon.triprepapp.data.TrainingStorageManager
 import com.triathlon.triprepapp.planner.TrainingPlannerActivity
 import com.google.android.material.button.MaterialButton
 import java.text.SimpleDateFormat
@@ -70,10 +71,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadNextTraining() {
-        // TODO: Load from planner database
-        // For now, show placeholder
-        nextTrainingTitle.text = "Aucun entraînement planifié"
-        nextTrainingTime.visibility = View.GONE
+        val trainings = TrainingStorageManager.loadTrainings(this)
+        val dateTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+        val displayFormat = SimpleDateFormat("dd MMMM 'à' HH:mm", Locale.FRENCH)
+        val now = System.currentTimeMillis()
+
+        // Find next training (future trainings sorted by date/time)
+        val nextTraining = trainings
+            .mapNotNull { training ->
+                try {
+                    val dateTime = dateTimeFormat.parse("${training.date} ${training.time}")
+                    if (dateTime != null && dateTime.time > now) {
+                        Pair(training, dateTime)
+                    } else null
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            .minByOrNull { it.second.time }
+
+        if (nextTraining != null) {
+            nextTrainingTitle.text = nextTraining.first.getDisplayTitle()
+            nextTrainingTime.text = displayFormat.format(nextTraining.second)
+            nextTrainingTime.visibility = View.VISIBLE
+        } else {
+            nextTrainingTitle.text = "Aucun entraînement planifié"
+            nextTrainingTime.visibility = View.GONE
+        }
     }
 
     private fun showCalculatorMenu(view: View) {

@@ -20,7 +20,7 @@ class CyclingCalculatorActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cycling_calculator)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
 
         ftpInput = findViewById(R.id.ftpInput)
         calculateButton = findViewById(R.id.calculateButton)

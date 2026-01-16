@@ -21,7 +21,7 @@ class RunningCalculatorActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_running_calculator)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
 
         distanceInput = findViewById(R.id.distanceInput)
         calculateButton = findViewById(R.id.calculateButton)

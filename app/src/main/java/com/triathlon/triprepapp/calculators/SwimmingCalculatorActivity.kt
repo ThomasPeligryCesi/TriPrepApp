@@ -22,7 +22,7 @@ class SwimmingCalculatorActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_swimming_calculator)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
 
         timeInput = findViewById(R.id.timeInput)
         calculateButton = findViewById(R.id.calculateButton)
