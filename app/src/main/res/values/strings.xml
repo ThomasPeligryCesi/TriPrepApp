@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TriPrep</string>
+    <string name="main_title">Planificateur Triathlon</string>
+    <string name="calculator_running">Calculateur Course à Pied</string>
+    <string name="calculator_swimming">Calculateur Natation</string>
+    <string name="calculator_cycling">Calculateur Vélo</string>
+    <string name="training_planner">Planificateur d\'Entraînements</string>
+
+    <!-- Running Calculator -->
+    <string name="running_title">Test Semi-Cooper (6 min)</string>
+    <string name="running_distance">Distance parcourue en 6 minutes (mètres)</string>
+    <string name="calculate">Calculer</string>
+    <string name="vma_result">VMA : %.2f km/h</string>
+    <string name="vo2max_result">VO2 Max : %.2f ml/min/kg</string>
+
+    <!-- Swimming Calculator -->
+    <string name="swimming_title">Test 400m Natation</string>
+    <string name="swimming_time">Temps pour 400m (MM:SS)</string>
+    <string name="swimming_results">Allures d\'entraînement</string>
+    <string name="v2_zone">V2 (50m) : %.1fs | (100m) : %.1fs | (200m) : %.1fs</string>
+    <string name="v3_zone">V3 (50m) : %.1fs | (100m) : %.1fs | (200m) : %.1fs</string>
+    <string name="v4_zone">V4 (50m) : %.1fs | (100m) : %.1fs | (200m) : %.1fs</string>
+
+    <!-- Cycling Calculator -->
+    <string name="cycling_title">Calculateur Vélo</string>
+    <string name="cycling_ftp">FTP (Watts)</string>
+    <string name="cycling_zones">Zones d\'entraînement</string>
+
+    <!-- Training Planner -->
+    <string name="planner_title">Planificateur</string>
+    <string name="add_training">Ajouter Entraînement</string>
+    <string name="training_date">Date</string>
+    <string name="training_time">Heure</string>
+    <string name="training_type">Type</string>
+    <string name="training_description">Description</string>
+    <string name="save">Enregistrer</string>
+    <string name="cancel">Annuler</string>
+    <string name="notification_channel_name">Rappels d\'entraînement</string>
+    <string name="notification_channel_desc">Notifications pour les entraînements planifiés</string>
+</resources>
