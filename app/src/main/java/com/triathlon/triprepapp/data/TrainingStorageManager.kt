@@ -2,6 +2,7 @@ package com.triathlon.triprepapp.data
 
 import android.content.Context
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.triathlon.triprepapp.planner.Training
 
@@ -9,7 +10,9 @@ object TrainingStorageManager {
     private const val PREFS_NAME = "triprep_trainings"
     private const val KEY_TRAININGS = "trainings_list"
 
-    private val gson = Gson()
+    private val gson: Gson = GsonBuilder()
+        .serializeNulls()
+        .create()
 
     /**
      * Save trainings list to persistent storage
@@ -30,8 +33,12 @@ object TrainingStorageManager {
         return if (json != null) {
             try {
                 val type = object : TypeToken<MutableList<Training>>() {}.type
-                gson.fromJson(json, type)
+                val trainings: MutableList<Training>? = gson.fromJson(json, type)
+                trainings ?: mutableListOf()
             } catch (e: Exception) {
+                e.printStackTrace()
+                // Clear corrupted data
+                clearTrainings(context)
                 mutableListOf()
             }
         } else {

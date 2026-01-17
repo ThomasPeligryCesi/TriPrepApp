@@ -45,60 +45,76 @@ class TrainingPlannerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_training_planner)
 
-        supportActionBar?.hide()
+        try {
+            setContentView(R.layout.activity_training_planner)
 
-        // Request notification permission for Android 13+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    NOTIFICATION_PERMISSION_CODE
-                )
+            supportActionBar?.hide()
+
+            // Request notification permission for Android 13+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        NOTIFICATION_PERMISSION_CODE
+                    )
+                }
             }
-        }
 
-        calendarView = findViewById(R.id.calendarView)
-        trainingsRecyclerView = findViewById(R.id.trainingsRecyclerView)
-        selectedDateText = findViewById(R.id.selectedDateText)
+            calendarView = findViewById(R.id.calendarView)
+            trainingsRecyclerView = findViewById(R.id.trainingsRecyclerView)
+            selectedDateText = findViewById(R.id.selectedDateText)
 
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        selectedDate = dateFormat.format(Date(calendarView.date))
-        updateSelectedDateText()
-
-        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            val calendar = Calendar.getInstance()
-            calendar.set(year, month, dayOfMonth)
-            selectedDate = dateFormat.format(calendar.time)
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            selectedDate = dateFormat.format(Date(calendarView.date))
             updateSelectedDateText()
-            filterTrainingsByDate()
-        }
 
-        // Load trainings from persistent storage
-        trainings.clear()
-        trainings.addAll(TrainingStorageManager.loadTrainings(this))
-
-        trainingAdapter = TrainingAdapter(mutableListOf()) { training ->
-            if (training.isPast()) {
-                showReviewTrainingDialog(training)
-            } else {
-                showEditTrainingDialog(training)
+            calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+                val calendar = Calendar.getInstance()
+                calendar.set(year, month, dayOfMonth)
+                selectedDate = dateFormat.format(calendar.time)
+                updateSelectedDateText()
+                filterTrainingsByDate()
             }
-        }
-        trainingsRecyclerView.adapter = trainingAdapter
-        trainingsRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Show trainings for selected date
-        filterTrainingsByDate()
+            // Load trainings from persistent storage
+            trainings.clear()
+            try {
+                trainings.addAll(TrainingStorageManager.loadTrainings(this))
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // If loading fails due to incompatible data format, clear and start fresh
+                TrainingStorageManager.clearTrainings(this)
+            }
 
-        findViewById<FloatingActionButton>(R.id.fabAddTraining).setOnClickListener {
-            showAddTrainingDialog()
+            trainingAdapter = TrainingAdapter(mutableListOf()) { training ->
+                try {
+                    if (training.isPast()) {
+                        showReviewTrainingDialog(training)
+                    } else {
+                        showEditTrainingDialog(training)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            trainingsRecyclerView.adapter = trainingAdapter
+            trainingsRecyclerView.layoutManager = LinearLayoutManager(this)
+
+            // Show trainings for selected date
+            filterTrainingsByDate()
+
+            findViewById<FloatingActionButton>(R.id.fabAddTraining).setOnClickListener {
+                showAddTrainingDialog()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            finish()
         }
     }
 
