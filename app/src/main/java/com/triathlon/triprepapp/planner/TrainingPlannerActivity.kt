@@ -90,7 +90,11 @@ class TrainingPlannerActivity : AppCompatActivity() {
         trainings.addAll(TrainingStorageManager.loadTrainings(this))
 
         trainingAdapter = TrainingAdapter(mutableListOf()) { training ->
-            showEditTrainingDialog(training)
+            if (training.isPast()) {
+                showReviewTrainingDialog(training)
+            } else {
+                showEditTrainingDialog(training)
+            }
         }
         trainingsRecyclerView.adapter = trainingAdapter
         trainingsRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -304,7 +308,9 @@ class TrainingPlannerActivity : AppCompatActivity() {
                         date = date,
                         time = time,
                         sport = sport,
-                        parts = parts
+                        parts = parts,
+                        notes = existingTraining.notes, // Preserve notes
+                        reviewed = existingTraining.reviewed // Preserve review status
                     )
                     trainings.add(updatedTraining)
                     scheduleNotification(updatedTraining)
@@ -327,6 +333,48 @@ class TrainingPlannerActivity : AppCompatActivity() {
                 updateCalendarDecorators()
                 dialog.dismiss()
             }
+        }
+
+        dialog.show()
+    }
+
+    private fun showReviewTrainingDialog(training: Training) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_review_training, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        val titleText = dialogView.findViewById<TextView>(R.id.reviewDialogTitle)
+        val partsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.reviewPartsRecyclerView)
+        val notesInput = dialogView.findViewById<TextInputEditText>(R.id.reviewNotesInput)
+        val cancelButton = dialogView.findViewById<MaterialButton>(R.id.reviewCancelButton)
+        val saveButton = dialogView.findViewById<MaterialButton>(R.id.reviewSaveButton)
+
+        titleText.text = "Valider ${training.getDisplayTitle()}"
+        notesInput.setText(training.notes)
+
+        // Set up parts recycler view
+        val partAdapter = TrainingPartReviewAdapter(training.parts)
+        partsRecyclerView.adapter = partAdapter
+        partsRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        saveButton.setOnClickListener {
+            training.notes = notesInput.text.toString()
+            training.reviewed = true
+
+            // Update training in the list
+            val index = trainings.indexOfFirst { it.id == training.id }
+            if (index != -1) {
+                trainings[index] = training
+                TrainingStorageManager.saveTrainings(this, trainings)
+                filterTrainingsByDate()
+            }
+
+            dialog.dismiss()
         }
 
         dialog.show()

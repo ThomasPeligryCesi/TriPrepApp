@@ -17,6 +17,8 @@ class TrainingAdapter(
         val sportName: TextView = view.findViewById(R.id.trainingSportName)
         val timeText: TextView = view.findViewById(R.id.trainingTime)
         val partsText: TextView = view.findViewById(R.id.trainingParts)
+        val completionStatus: TextView = view.findViewById(R.id.trainingCompletionStatus)
+        val notesText: TextView = view.findViewById(R.id.trainingNotes)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrainingViewHolder {
@@ -31,6 +33,25 @@ class TrainingAdapter(
         holder.sportName.text = training.sport.displayName()
         holder.timeText.text = training.time
         holder.partsText.text = training.getDisplayParts()
+
+        // Show completion status if training is past
+        if (training.isPast() && training.reviewed) {
+            holder.completionStatus.visibility = View.VISIBLE
+            holder.completionStatus.text = "Validé : ${training.getCompletionRate()}"
+        } else if (training.isPast()) {
+            holder.completionStatus.visibility = View.VISIBLE
+            holder.completionStatus.text = "En attente de validation"
+        } else {
+            holder.completionStatus.visibility = View.GONE
+        }
+
+        // Show notes if available
+        if (training.notes.isNotEmpty()) {
+            holder.notesText.visibility = View.VISIBLE
+            holder.notesText.text = "Note : ${training.notes}"
+        } else {
+            holder.notesText.visibility = View.GONE
+        }
 
         holder.itemView.setOnClickListener {
             onTrainingClick(training)
