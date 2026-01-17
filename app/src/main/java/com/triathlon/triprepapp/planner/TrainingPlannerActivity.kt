@@ -14,7 +14,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import android.widget.CalendarView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -28,11 +27,14 @@ import com.google.android.material.textfield.TextInputEditText
 import com.triathlon.triprepapp.R
 import com.triathlon.triprepapp.data.TrainingStorageManager
 import com.triathlon.triprepapp.notifications.TrainingNotificationReceiver
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener
 import java.text.SimpleDateFormat
 import java.util.*
 
 class TrainingPlannerActivity : AppCompatActivity() {
-    private lateinit var calendarView: CalendarView
+    private lateinit var calendarView: MaterialCalendarView
     private lateinit var trainingsRecyclerView: RecyclerView
     private lateinit var trainingAdapter: TrainingAdapter
     private lateinit var selectedDateText: TextView
@@ -69,16 +71,19 @@ class TrainingPlannerActivity : AppCompatActivity() {
         selectedDateText = findViewById(R.id.selectedDateText)
 
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        selectedDate = dateFormat.format(Date(calendarView.date))
+        val today = CalendarDay.today()
+        selectedDate = dateFormat.format(Date())
         updateSelectedDateText()
 
-        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+        calendarView.setOnDateChangedListener { _, date, _ ->
             val calendar = Calendar.getInstance()
-            calendar.set(year, month, dayOfMonth)
+            calendar.set(date.year, date.month - 1, date.day)
             selectedDate = dateFormat.format(calendar.time)
             updateSelectedDateText()
             filterTrainingsByDate()
         }
+
+        calendarView.selectedDate = today
 
         // Load trainings from persistent storage
         trainings.clear()
@@ -92,6 +97,9 @@ class TrainingPlannerActivity : AppCompatActivity() {
 
         // Show trainings for selected date
         filterTrainingsByDate()
+
+        // Update calendar decorators
+        updateCalendarDecorators()
 
         findViewById<FloatingActionButton>(R.id.fabAddTraining).setOnClickListener {
             showAddTrainingDialog()
@@ -112,6 +120,45 @@ class TrainingPlannerActivity : AppCompatActivity() {
     private fun filterTrainingsByDate() {
         val filtered = trainings.filter { it.date == selectedDate }
         trainingAdapter.updateTrainings(filtered)
+    }
+
+    private fun updateCalendarDecorators() {
+        // Clear existing decorators
+        calendarView.removeDecorators()
+
+        // Group trainings by date and count them
+        val trainingsByDate = trainings.groupBy { it.date }
+
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        trainingsByDate.forEach { (dateString, trainingsOnDate) ->
+            try {
+                val date = dateFormat.parse(dateString)
+                if (date != null) {
+                    val calendar = Calendar.getInstance()
+                    calendar.time = date
+
+                    val calendarDay = CalendarDay.from(
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH) + 1,
+                        calendar.get(Calendar.DAY_OF_MONTH)
+                    )
+
+                    val count = trainingsOnDate.size
+
+                    // Choose color based on count
+                    val color = when {
+                        count == 1 -> ContextCompat.getColor(this, android.R.color.holo_green_dark)
+                        count == 2 -> ContextCompat.getColor(this, android.R.color.holo_orange_dark)
+                        else -> ContextCompat.getColor(this, android.R.color.holo_red_dark)
+                    }
+
+                    calendarView.addDecorator(TrainingDecorator(calendarDay, count, color))
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun showEditTrainingDialog(existingTraining: Training) {
@@ -277,6 +324,7 @@ class TrainingPlannerActivity : AppCompatActivity() {
                 TrainingStorageManager.saveTrainings(this, trainings)
 
                 filterTrainingsByDate()
+                updateCalendarDecorators()
                 dialog.dismiss()
             }
         }
