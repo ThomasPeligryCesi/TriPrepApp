@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:text="Type d'entraînement"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/text_primary" />
 
         <TextView
             android:id="@+id/partDurationText"
@@ -32,7 +33,7 @@
             android:layout_height="wrap_content"
             android:text="Durée"
             android:textSize="14sp"
-            android:textColor="?android:textColorSecondary" />
+            android:textColor="@color/text_secondary" />
     </LinearLayout>
 
 </LinearLayout>

@@ -13,6 +13,7 @@
         android:text="Valider l'entraînement"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="@color/text_primary"
         android:layout_marginBottom="16dp" />
 
     <TextView
@@ -20,6 +21,7 @@
         android:layout_height="wrap_content"
         android:text="Cochez les étapes réalisées :"
         android:textSize="14sp"
+        android:textColor="@color/text_secondary"
         android:layout_marginBottom="8dp" />
 
     <androidx.recyclerview.widget.RecyclerView
