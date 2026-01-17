@@ -1,8 +1,11 @@
 package com.triathlon.triprepapp
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -52,6 +55,11 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<MaterialButton>(R.id.btnTrainingPlanner).setOnClickListener {
             startActivity(Intent(this, TrainingPlannerActivity::class.java))
+        }
+
+        // Click listener for 400m swim card
+        findViewById<LinearLayout>(R.id.swim400mCard).setOnClickListener {
+            showSwimPacesDialog()
         }
     }
 
@@ -122,5 +130,86 @@ class MainActivity : AppCompatActivity() {
             }
         }
         popup.show()
+    }
+
+    private fun showSwimPacesDialog() {
+        val metrics = PerformanceDataManager.getPerformanceMetrics(this)
+        val swim400mTime = metrics.swim400m
+
+        if (swim400mTime == null || swim400mTime == "--") {
+            // Show message if no 400m time is available
+            AlertDialog.Builder(this)
+                .setTitle("Pas de données")
+                .setMessage("Veuillez d'abord enregistrer votre temps de 400m nage via le calculateur de natation.")
+                .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+                .show()
+            return
+        }
+
+        // Parse time to seconds
+        val timeInSeconds = parseTimeToSeconds(swim400mTime) ?: return
+
+        // Calculate paces
+        val base100m = timeInSeconds / 4.0
+
+        // V2: 115% of test time (slower)
+        val v2_100m = base100m * 1.15
+        val v2_50m = v2_100m / 2.0
+        val v2_200m = v2_100m * 2.0
+
+        // V3: 105% of test time
+        val v3_100m = base100m * 1.05
+        val v3_50m = v3_100m / 2.0
+        val v3_200m = v3_100m * 2.0
+
+        // V4: 97% of test time (faster)
+        val v4_100m = base100m * 0.97
+        val v4_50m = v4_100m / 2.0
+        val v4_200m = v4_100m * 2.0
+
+        // Show dialog with paces
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_swim_paces, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        val timeText = dialogView.findViewById<TextView>(R.id.swim400mTimeText)
+        val v2PacesText = dialogView.findViewById<TextView>(R.id.v2PacesText)
+        val v3PacesText = dialogView.findViewById<TextView>(R.id.v3PacesText)
+        val v4PacesText = dialogView.findViewById<TextView>(R.id.v4PacesText)
+        val closeButton = dialogView.findViewById<MaterialButton>(R.id.closeButton)
+
+        timeText.text = "Basé sur votre 400m : $swim400mTime"
+        v2PacesText.text = "50m: ${formatTime(v2_50m)} | 100m: ${formatTime(v2_100m)} | 200m: ${formatTime(v2_200m)}"
+        v3PacesText.text = "50m: ${formatTime(v3_50m)} | 100m: ${formatTime(v3_100m)} | 200m: ${formatTime(v3_200m)}"
+        v4PacesText.text = "50m: ${formatTime(v4_50m)} | 100m: ${formatTime(v4_100m)} | 200m: ${formatTime(v4_200m)}"
+
+        closeButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun parseTimeToSeconds(time: String): Double? {
+        return try {
+            val parts = time.split(":")
+            if (parts.size != 2) return null
+            val minutes = parts[0].toInt()
+            val seconds = parts[1].toInt()
+            (minutes * 60 + seconds).toDouble()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private fun formatTime(seconds: Double): String {
+        val mins = (seconds / 60).toInt()
+        val secs = (seconds % 60).toInt()
+        return if (mins > 0) {
+            String.format("%d:%02d", mins, secs)
+        } else {
+            String.format("%.1fs", seconds)
+        }
     }
 }
