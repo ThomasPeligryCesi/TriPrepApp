@@ -18,7 +18,8 @@ class CalendarIndicatorView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
+        style = Paint.Style.STROKE
+        strokeWidth = 3f
     }
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -74,11 +75,13 @@ class CalendarIndicatorView @JvmOverloads constructor(
 
         if (width == 0 || height == 0) return
 
-        // Approximate calendar grid dimensions
-        // Standard CalendarView shows 6 rows of dates
+        // CalendarView typically has a header row for weekdays (~40dp)
+        // and then 6 rows for dates
+        val headerHeight = 40f * resources.displayMetrics.density
+        val availableHeight = height - headerHeight
+        val cellHeight = availableHeight / 6f
         val cellWidth = width / 7f
-        val cellHeight = height / 6f
-        val radius = 8f
+        val radius = 22f // Larger radius to encircle the date text
 
         // Get the first day of the month
         val cal = Calendar.getInstance()
@@ -92,13 +95,14 @@ class CalendarIndicatorView @JvmOverloads constructor(
             val dateString = dateFormat.format(cal.time)
 
             indicators[dateString]?.let { indicator ->
-                // Calculate position
-                val totalDays = firstDayOfWeek + day - 1
+                // Calculate position - adjusted by -1 to fix offset
+                val totalDays = firstDayOfWeek + (day - 1)
                 val row = totalDays / 7
                 val col = totalDays % 7
 
+                // Center the circle in the cell
                 val x = col * cellWidth + cellWidth / 2f
-                val y = row * cellHeight + cellHeight - 15f // Position near bottom of cell
+                val y = headerHeight + row * cellHeight + cellHeight / 2f
 
                 // Choose color based on count and past status
                 paint.color = when {
