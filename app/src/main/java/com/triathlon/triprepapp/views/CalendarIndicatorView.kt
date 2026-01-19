@@ -75,13 +75,19 @@ class CalendarIndicatorView @JvmOverloads constructor(
 
         if (width == 0 || height == 0) return
 
-        // CalendarView typically has a header row for weekdays (~40dp)
-        // and then 6 rows for dates
-        val headerHeight = 40f * resources.displayMetrics.density
-        val availableHeight = height - headerHeight
+        // CalendarView structure analysis:
+        // - Week day labels at top (~50dp)
+        // - 6 rows of dates (rest of the height)
+        val density = resources.displayMetrics.density
+        val weekDayHeaderHeight = 50f * density
+
+        val availableHeight = height - weekDayHeaderHeight
         val cellHeight = availableHeight / 6f
         val cellWidth = width / 7f
-        val radius = 22f // Larger radius to encircle the date text
+        val radius = 28f // Larger radius for better visibility
+
+        // Stroke width adjustment for better visibility
+        paint.strokeWidth = 4f
 
         // Get the first day of the month
         val cal = Calendar.getInstance()
@@ -95,14 +101,14 @@ class CalendarIndicatorView @JvmOverloads constructor(
             val dateString = dateFormat.format(cal.time)
 
             indicators[dateString]?.let { indicator ->
-                // Calculate position - adjusted by -1 to fix offset
-                val totalDays = firstDayOfWeek + (day - 1)
-                val row = totalDays / 7
-                val col = totalDays % 7
+                // Calculate grid position
+                val position = firstDayOfWeek + day - 1
+                val row = position / 7
+                val col = position % 7
 
-                // Center the circle in the cell
-                val x = col * cellWidth + cellWidth / 2f
-                val y = headerHeight + row * cellHeight + cellHeight / 2f
+                // Calculate center of the cell
+                val centerX = col * cellWidth + cellWidth / 2f
+                val centerY = weekDayHeaderHeight + row * cellHeight + cellHeight / 2f
 
                 // Choose color based on count and past status
                 paint.color = when {
@@ -112,7 +118,7 @@ class CalendarIndicatorView @JvmOverloads constructor(
                     else -> ContextCompat.getColor(context, android.R.color.holo_red_dark)
                 }
 
-                canvas.drawCircle(x, y, radius, paint)
+                canvas.drawCircle(centerX, centerY, radius, paint)
             }
         }
     }
