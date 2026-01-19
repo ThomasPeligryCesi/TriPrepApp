@@ -45,12 +45,11 @@
             android:paddingTop="0dp">
 
             <!-- Calendar Card -->
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_glass_card"
                 android:padding="16dp"
-                android:orientation="vertical"
                 android:layout_marginBottom="20dp"
                 android:elevation="4dp">
 
@@ -61,7 +60,13 @@
                     android:background="@android:color/white"
                     android:dateTextAppearance="@style/CalendarDateTextStyle"
                     android:weekDayTextAppearance="@style/CalendarWeekDayTextStyle"/>
-            </LinearLayout>
+
+                <com.triathlon.triprepapp.views.CalendarIndicatorView
+                    android:id="@+id/calendarIndicatorView"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_gravity="center"/>
+            </FrameLayout>
 
             <!-- Trainings Section -->
             <TextView

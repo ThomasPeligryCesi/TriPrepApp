@@ -27,17 +27,21 @@ import com.google.android.material.textfield.TextInputEditText
 import com.triathlon.triprepapp.R
 import com.triathlon.triprepapp.data.TrainingStorageManager
 import com.triathlon.triprepapp.notifications.TrainingNotificationReceiver
+import com.triathlon.triprepapp.views.CalendarIndicatorView
 import android.widget.CalendarView
 import java.text.SimpleDateFormat
 import java.util.*
 
 class TrainingPlannerActivity : AppCompatActivity() {
     private lateinit var calendarView: CalendarView
+    private lateinit var calendarIndicatorView: CalendarIndicatorView
     private lateinit var trainingsRecyclerView: RecyclerView
     private lateinit var trainingAdapter: TrainingAdapter
     private lateinit var selectedDateText: TextView
     private val trainings = mutableListOf<Training>()
     private var selectedDate: String = ""
+    private var currentMonth: Int = Calendar.getInstance().get(Calendar.MONTH)
+    private var currentYear: Int = Calendar.getInstance().get(Calendar.YEAR)
 
     companion object {
         private const val NOTIFICATION_PERMISSION_CODE = 1001
@@ -67,17 +71,33 @@ class TrainingPlannerActivity : AppCompatActivity() {
             }
 
             calendarView = findViewById(R.id.calendarView)
+            calendarIndicatorView = findViewById(R.id.calendarIndicatorView)
             trainingsRecyclerView = findViewById(R.id.trainingsRecyclerView)
             selectedDateText = findViewById(R.id.selectedDateText)
 
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             selectedDate = dateFormat.format(Date(calendarView.date))
+
+            // Initialize current month and year
+            val cal = Calendar.getInstance()
+            cal.time = Date(calendarView.date)
+            currentMonth = cal.get(Calendar.MONTH)
+            currentYear = cal.get(Calendar.YEAR)
+
             updateSelectedDateText()
 
             calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
                 val calendar = Calendar.getInstance()
                 calendar.set(year, month, dayOfMonth)
                 selectedDate = dateFormat.format(calendar.time)
+
+                // Update month/year if changed
+                if (month != currentMonth || year != currentYear) {
+                    currentMonth = month
+                    currentYear = year
+                    updateCalendarIndicators()
+                }
+
                 updateSelectedDateText()
                 filterTrainingsByDate()
             }
@@ -109,6 +129,9 @@ class TrainingPlannerActivity : AppCompatActivity() {
             // Show trainings for selected date
             filterTrainingsByDate()
 
+            // Update calendar indicators
+            updateCalendarIndicators()
+
             findViewById<FloatingActionButton>(R.id.fabAddTraining).setOnClickListener {
                 showAddTrainingDialog()
             }
@@ -132,6 +155,10 @@ class TrainingPlannerActivity : AppCompatActivity() {
     private fun filterTrainingsByDate() {
         val filtered = trainings.filter { it.date == selectedDate }
         trainingAdapter.updateTrainings(filtered)
+    }
+
+    private fun updateCalendarIndicators() {
+        calendarIndicatorView.setTrainings(trainings, currentMonth, currentYear)
     }
 
     private fun showEditTrainingDialog(existingTraining: Training) {
@@ -299,6 +326,7 @@ class TrainingPlannerActivity : AppCompatActivity() {
                 TrainingStorageManager.saveTrainings(this, trainings)
 
                 filterTrainingsByDate()
+                updateCalendarIndicators()
                 dialog.dismiss()
             }
         }
@@ -340,6 +368,7 @@ class TrainingPlannerActivity : AppCompatActivity() {
                 trainings[index] = training
                 TrainingStorageManager.saveTrainings(this, trainings)
                 filterTrainingsByDate()
+                updateCalendarIndicators()
             }
 
             dialog.dismiss()
