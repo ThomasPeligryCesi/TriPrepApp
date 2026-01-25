@@ -19,7 +19,7 @@ class CalendarIndicatorView @JvmOverloads constructor(
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 3f
+        strokeWidth = 4f
     }
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -75,19 +75,27 @@ class CalendarIndicatorView @JvmOverloads constructor(
 
         if (width == 0 || height == 0) return
 
-        // CalendarView structure analysis:
-        // - Week day labels at top (~50dp)
-        // - 6 rows of dates (rest of the height)
-        val density = resources.displayMetrics.density
-        val weekDayHeaderHeight = 50f * density
+        // CalendarView internal structure:
+        // The standard Android CalendarView has:
+        // - A top section with month/year navigation (~40-45dp)
+        // - Week day labels (L M M J V S D) (~35-40dp)
+        // - 6 rows of dates
+        // Total offset from top is approximately 75-85dp before dates start
 
-        val availableHeight = height - weekDayHeaderHeight
+        val density = resources.displayMetrics.density
+
+        // Adjusted offset to account for month header + weekday labels
+        val topOffset = 80f * density
+
+        // Calculate dimensions
+        val availableHeight = height - topOffset
         val cellHeight = availableHeight / 6f
         val cellWidth = width / 7f
-        val radius = 28f // Larger radius for better visibility
 
-        // Stroke width adjustment for better visibility
-        paint.strokeWidth = 4f
+        // Larger circle to properly surround the date number
+        val radius = 32f
+
+        paint.strokeWidth = 4.5f
 
         // Get the first day of the month
         val cal = Calendar.getInstance()
@@ -101,14 +109,14 @@ class CalendarIndicatorView @JvmOverloads constructor(
             val dateString = dateFormat.format(cal.time)
 
             indicators[dateString]?.let { indicator ->
-                // Calculate grid position
+                // Calculate grid position (0-based)
                 val position = firstDayOfWeek + day - 1
                 val row = position / 7
                 val col = position % 7
 
                 // Calculate center of the cell
                 val centerX = col * cellWidth + cellWidth / 2f
-                val centerY = weekDayHeaderHeight + row * cellHeight + cellHeight / 2f
+                val centerY = topOffset + row * cellHeight + cellHeight / 2f
 
                 // Choose color based on count and past status
                 paint.color = when {
