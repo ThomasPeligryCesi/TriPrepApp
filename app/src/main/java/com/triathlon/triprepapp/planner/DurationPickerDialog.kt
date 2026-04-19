@@ -2,21 +2,24 @@ package com.triathlon.triprepapp.planner
 
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.Paint
 import android.view.LayoutInflater
-import android.widget.EditText
-import android.widget.NumberPicker
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
 import com.triathlon.triprepapp.R
 
 /**
- * Simple hour/minute picker that produces a normalized duration string like "1h30" or "45min".
- * Replaces the old free-text duration input ("Ex: 1h00, 45min, 30'") which had no validation and
- * inconsistent formatting.
+ * Hour/minute picker built on simple +/- steppers and quick-preset chips. Replaced the Android
+ * NumberPicker because its wheel text color is overridden internally on every draw on pre-API 29,
+ * making the digits disappear as soon as the user scrolled. The stepper approach is fully themable
+ * and works consistently across all supported API levels.
+ *
+ * Output is normalized to "45min", "1h", or "1h30".
  */
 object DurationPickerDialog {
+
+    private const val MAX_HOURS = 5
+    private const val MINUTE_STEP = 5
 
     fun show(
         context: Context,
@@ -24,49 +27,61 @@ object DurationPickerDialog {
         onPicked: (String) -> Unit
     ) {
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_duration_picker, null)
-        val hourPicker = view.findViewById<NumberPicker>(R.id.hourPicker)
-        val minutePicker = view.findViewById<NumberPicker>(R.id.minutePicker)
+        val hourValue = view.findViewById<TextView>(R.id.hourValue)
+        val minuteValue = view.findViewById<TextView>(R.id.minuteValue)
+        val btnHourMinus = view.findViewById<MaterialButton>(R.id.btnHourMinus)
+        val btnHourPlus = view.findViewById<MaterialButton>(R.id.btnHourPlus)
+        val btnMinuteMinus = view.findViewById<MaterialButton>(R.id.btnMinuteMinus)
+        val btnMinutePlus = view.findViewById<MaterialButton>(R.id.btnMinutePlus)
         val preview = view.findViewById<TextView>(R.id.durationPreview)
         val cancel = view.findViewById<MaterialButton>(R.id.btnDurationCancel)
         val ok = view.findViewById<MaterialButton>(R.id.btnDurationOk)
 
-        hourPicker.minValue = 0
-        hourPicker.maxValue = 5
-        hourPicker.wrapSelectorWheel = false
-
-        // Minutes in 5-minute increments to keep the wheel compact and avoid "47 min" inputs.
-        val minuteValues = (0..55 step 5).map { it.toString().padStart(2, '0') }.toTypedArray()
-        minutePicker.minValue = 0
-        minutePicker.maxValue = minuteValues.size - 1
-        minutePicker.displayedValues = minuteValues
-        minutePicker.wrapSelectorWheel = false
-
-        // On stock themes the NumberPicker's selector text and internal EditText can render in the
-        // same color as the background (invisible). Force a readable color for both the wheel text
-        // and the centered editable field.
-        val pickerColor = ContextCompat.getColor(context, R.color.text_primary)
-        setNumberPickerTextColor(hourPicker, pickerColor)
-        setNumberPickerTextColor(minutePicker, pickerColor)
-
         val (initialHours, initialMinutes) = parseDuration(initialDuration)
-        hourPicker.value = initialHours.coerceIn(0, 5)
-        val minuteIndex = minuteValues.indexOfFirst { it.toInt() >= initialMinutes }
-            .takeIf { it >= 0 } ?: 0
-        minutePicker.value = minuteIndex
+        var hours = initialHours.coerceIn(0, MAX_HOURS)
+        var minutes = snapToStep(initialMinutes).coerceIn(0, 55)
 
-        fun updatePreview() {
-            preview.text = format(hourPicker.value, minuteValues[minutePicker.value].toInt())
+        fun render() {
+            hourValue.text = hours.toString()
+            minuteValue.text = minutes.toString().padStart(2, '0')
+            preview.text = format(hours, minutes)
+            btnHourMinus.isEnabled = hours > 0
+            btnHourPlus.isEnabled = hours < MAX_HOURS
+            btnMinuteMinus.isEnabled = minutes > 0
+            btnMinutePlus.isEnabled = minutes < 55
         }
-        updatePreview()
+        render()
 
-        hourPicker.setOnValueChangedListener { _, _, _ -> updatePreview() }
-        minutePicker.setOnValueChangedListener { _, _, _ -> updatePreview() }
+        btnHourMinus.setOnClickListener {
+            if (hours > 0) { hours--; render() }
+        }
+        btnHourPlus.setOnClickListener {
+            if (hours < MAX_HOURS) { hours++; render() }
+        }
+        btnMinuteMinus.setOnClickListener {
+            if (minutes >= MINUTE_STEP) { minutes -= MINUTE_STEP; render() }
+            else if (minutes > 0) { minutes = 0; render() }
+        }
+        btnMinutePlus.setOnClickListener {
+            if (minutes + MINUTE_STEP <= 55) { minutes += MINUTE_STEP; render() }
+        }
+
+        // Quick-preset chips
+        fun applyPreset(totalMinutes: Int) {
+            hours = (totalMinutes / 60).coerceAtMost(MAX_HOURS)
+            minutes = snapToStep(totalMinutes % 60)
+            render()
+        }
+        view.findViewById<Chip>(R.id.presetQuick15).setOnClickListener { applyPreset(15) }
+        view.findViewById<Chip>(R.id.presetQuick30).setOnClickListener { applyPreset(30) }
+        view.findViewById<Chip>(R.id.presetQuick45).setOnClickListener { applyPreset(45) }
+        view.findViewById<Chip>(R.id.presetQuick60).setOnClickListener { applyPreset(60) }
+        view.findViewById<Chip>(R.id.presetQuick90).setOnClickListener { applyPreset(90) }
+        view.findViewById<Chip>(R.id.presetQuick120).setOnClickListener { applyPreset(120) }
 
         val dialog = AlertDialog.Builder(context).setView(view).create()
         cancel.setOnClickListener { dialog.dismiss() }
         ok.setOnClickListener {
-            val hours = hourPicker.value
-            val minutes = minuteValues[minutePicker.value].toInt()
             if (hours == 0 && minutes == 0) {
                 dialog.dismiss()
                 return@setOnClickListener
@@ -79,30 +94,15 @@ object DurationPickerDialog {
 
     /** Normalized output: "45min", "1h", "1h30". */
     fun format(hours: Int, minutes: Int): String = when {
+        hours == 0 && minutes == 0 -> "0min"
         hours == 0 -> "${minutes}min"
         minutes == 0 -> "${hours}h"
         else -> "${hours}h${minutes.toString().padStart(2, '0')}"
     }
 
-    /**
-     * Forces the NumberPicker's selector wheel paint and inner EditText color so the digits are
-     * visible against a light dialog background. Uses reflection because
-     * NumberPicker#setTextColor() only exists from API 29 and minSdk is 24.
-     */
-    private fun setNumberPickerTextColor(picker: NumberPicker, color: Int) {
-        try {
-            val paintField = NumberPicker::class.java.getDeclaredField("mSelectorWheelPaint")
-            paintField.isAccessible = true
-            (paintField.get(picker) as? Paint)?.color = color
-        } catch (_: Exception) {
-        }
-        for (i in 0 until picker.childCount) {
-            val child = picker.getChildAt(i)
-            if (child is EditText) {
-                child.setTextColor(color)
-            }
-        }
-        picker.invalidate()
+    private fun snapToStep(minutes: Int): Int {
+        val snapped = (minutes / MINUTE_STEP) * MINUTE_STEP
+        return snapped.coerceIn(0, 55)
     }
 
     /**
@@ -112,7 +112,6 @@ object DurationPickerDialog {
     fun parseDuration(input: String?): Pair<Int, Int> {
         if (input.isNullOrBlank()) return 0 to 0
         val s = input.trim().lowercase()
-        // "1h30" or "1h"
         val hIndex = s.indexOf('h')
         if (hIndex >= 0) {
             val h = s.substring(0, hIndex).toIntOrNull() ?: 0
@@ -120,17 +119,14 @@ object DurationPickerDialog {
             val m = rest.toIntOrNull() ?: 0
             return h to m
         }
-        // "45min" / "30min"
         if (s.contains("min")) {
             val m = s.replace("min", "").filter { it.isDigit() }.toIntOrNull() ?: 0
             return 0 to m
         }
-        // "30'" (minutes apostrophe)
         if (s.endsWith("'")) {
             val m = s.dropLast(1).filter { it.isDigit() }.toIntOrNull() ?: 0
             return 0 to m
         }
-        // Plain number → treat as minutes
         val m = s.filter { it.isDigit() }.toIntOrNull() ?: 0
         return 0 to m
     }
