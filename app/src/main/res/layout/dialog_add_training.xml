@@ -63,6 +63,8 @@
                 android:textColorHint="@color/text_secondary"
                 app:boxStrokeColor="@color/ocean_blue"
                 app:hintTextColor="@color/ocean_blue"
+                app:startIconDrawable="@android:drawable/ic_menu_my_calendar"
+                app:startIconTint="@color/ocean_blue"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -85,6 +87,8 @@
                 android:textColorHint="@color/text_secondary"
                 app:boxStrokeColor="@color/ocean_blue"
                 app:hintTextColor="@color/ocean_blue"
+                app:startIconDrawable="@android:drawable/ic_lock_idle_alarm"
+                app:startIconTint="@color/ocean_blue"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -256,7 +260,7 @@
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Durée"
+                        android:hint="Durée (appuyez pour choisir)"
                         android:layout_marginBottom="16dp"
                         android:textColorHint="@color/text_secondary"
                         app:boxStrokeColor="@color/ocean_blue"
@@ -269,8 +273,10 @@
                             android:id="@+id/partDurationInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="text"
-                            android:hint="Ex: 1h00, 45min, 30'"
+                            android:inputType="none"
+                            android:focusable="false"
+                            android:clickable="true"
+                            android:hint="ex. 45min ou 1h30"
                             android:textSize="16sp"
                             android:textColor="@color/text_primary"/>
                     </com.google.android.material.textfield.TextInputLayout>
