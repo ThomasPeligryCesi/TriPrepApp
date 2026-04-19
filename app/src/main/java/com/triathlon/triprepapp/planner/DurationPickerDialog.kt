@@ -2,9 +2,12 @@ package com.triathlon.triprepapp.planner
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Paint
 import android.view.LayoutInflater
+import android.widget.EditText
 import android.widget.NumberPicker
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.triathlon.triprepapp.R
 
@@ -37,6 +40,13 @@ object DurationPickerDialog {
         minutePicker.maxValue = minuteValues.size - 1
         minutePicker.displayedValues = minuteValues
         minutePicker.wrapSelectorWheel = false
+
+        // On stock themes the NumberPicker's selector text and internal EditText can render in the
+        // same color as the background (invisible). Force a readable color for both the wheel text
+        // and the centered editable field.
+        val pickerColor = ContextCompat.getColor(context, R.color.text_primary)
+        setNumberPickerTextColor(hourPicker, pickerColor)
+        setNumberPickerTextColor(minutePicker, pickerColor)
 
         val (initialHours, initialMinutes) = parseDuration(initialDuration)
         hourPicker.value = initialHours.coerceIn(0, 5)
@@ -72,6 +82,27 @@ object DurationPickerDialog {
         hours == 0 -> "${minutes}min"
         minutes == 0 -> "${hours}h"
         else -> "${hours}h${minutes.toString().padStart(2, '0')}"
+    }
+
+    /**
+     * Forces the NumberPicker's selector wheel paint and inner EditText color so the digits are
+     * visible against a light dialog background. Uses reflection because
+     * NumberPicker#setTextColor() only exists from API 29 and minSdk is 24.
+     */
+    private fun setNumberPickerTextColor(picker: NumberPicker, color: Int) {
+        try {
+            val paintField = NumberPicker::class.java.getDeclaredField("mSelectorWheelPaint")
+            paintField.isAccessible = true
+            (paintField.get(picker) as? Paint)?.color = color
+        } catch (_: Exception) {
+        }
+        for (i in 0 until picker.childCount) {
+            val child = picker.getChildAt(i)
+            if (child is EditText) {
+                child.setTextColor(color)
+            }
+        }
+        picker.invalidate()
     }
 
     /**

@@ -386,6 +386,7 @@ class TrainingPlannerActivity : AppCompatActivity() {
             val intent = Intent(this, TrainingNotificationReceiver::class.java).apply {
                 putExtra("training_type", training.getDisplayTitle())
                 putExtra("training_description", training.getDisplayParts())
+                putExtra("training_time", training.time)
             }
 
             val pendingIntent = PendingIntent.getBroadcast(
@@ -395,13 +396,22 @@ class TrainingPlannerActivity : AppCompatActivity() {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-            val dateTime = dateFormat.parse("${training.date} ${training.time}")
+            // Fire the reminder at 08:00 on the day before the training.
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val trainingDay = dateFormat.parse(training.date) ?: return
+            val reminder = Calendar.getInstance().apply {
+                time = trainingDay
+                add(Calendar.DAY_OF_MONTH, -1)
+                set(Calendar.HOUR_OF_DAY, 8)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
 
-            if (dateTime != null && dateTime.time > System.currentTimeMillis()) {
+            if (reminder.timeInMillis > System.currentTimeMillis()) {
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
-                    dateTime.time,
+                    reminder.timeInMillis,
                     pendingIntent
                 )
             }

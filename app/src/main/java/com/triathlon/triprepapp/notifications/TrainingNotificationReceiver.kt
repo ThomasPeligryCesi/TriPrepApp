@@ -18,13 +18,21 @@ class TrainingNotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val trainingType = intent.getStringExtra("training_type") ?: "Entraînement"
         val trainingDescription = intent.getStringExtra("training_description") ?: ""
+        val trainingTime = intent.getStringExtra("training_time")
 
         createNotificationChannel(context)
 
+        val title = if (!trainingTime.isNullOrBlank()) {
+            "Demain $trainingTime : $trainingType"
+        } else {
+            "Demain : $trainingType"
+        }
+
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Rappel: $trainingType")
+            .setContentTitle(title)
             .setContentText(trainingDescription)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(trainingDescription))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
