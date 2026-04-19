@@ -4,7 +4,8 @@ import java.io.Serializable
 
 data class TrainingPart(
     val type: String,  // V2, V3, V4, Endurance, Tempo, etc.
-    val duration: String  // Format: "1h00", "45min", etc.
+    val duration: String,  // Format: "1h00", "45min", etc.
+    var completed: Boolean = false  // Indicates if this part was completed
 ) : Serializable
 
 enum class Sport {
@@ -73,7 +74,9 @@ data class Training(
     val date: String,  // Format: "yyyy-MM-dd"
     val time: String,  // Format: "HH:mm"
     val sport: Sport,
-    val parts: List<TrainingPart>
+    val parts: List<TrainingPart>,
+    var notes: String = "",  // Notes on how the training went
+    var reviewed: Boolean = false  // Indicates if the training has been reviewed
 ) : Serializable {
 
     fun getDisplayTitle(): String {
@@ -87,5 +90,22 @@ data class Training(
     fun getTotalDuration(): String {
         // TODO: Calculate total duration from all parts
         return parts.firstOrNull()?.duration ?: ""
+    }
+
+    fun isPast(): Boolean {
+        try {
+            val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault())
+            val trainingDateTime = dateFormat.parse("$date $time")
+            return trainingDateTime?.before(java.util.Date()) ?: false
+        } catch (e: Exception) {
+            return false
+        }
+    }
+
+    fun getCompletionRate(): String {
+        if (parts.isEmpty()) return "0%"
+        val completedCount = parts.count { it.completed }
+        val percentage = (completedCount * 100) / parts.size
+        return "$percentage%"
     }
 }

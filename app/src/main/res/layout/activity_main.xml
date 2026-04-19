@@ -215,6 +215,7 @@
 
             <!-- Swimming 400m Card -->
             <LinearLayout
+                android:id="@+id/swim400mCard"
                 android:layout_width="0dp"
                 android:layout_height="120dp"
                 android:layout_weight="1"
@@ -222,7 +223,9 @@
                 android:orientation="vertical"
                 android:padding="16dp"
                 android:layout_marginStart="8dp"
-                android:elevation="2dp">
+                android:elevation="2dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <TextView
                     android:layout_width="wrap_content"

@@ -58,4 +58,28 @@
         android:textColor="@color/text_primary"
         android:lineSpacingExtra="4dp"/>
 
+    <!-- Completion Status -->
+    <TextView
+        android:id="@+id/trainingCompletionStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Validé : 80%"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="@color/ocean_blue"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"/>
+
+    <!-- Training Notes -->
+    <TextView
+        android:id="@+id/trainingNotes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notes"
+        android:textSize="12sp"
+        android:textColor="@color/text_secondary"
+        android:textStyle="italic"
+        android:layout_marginTop="4dp"
+        android:visibility="gone"/>
+
 </LinearLayout>
